@@ -3,6 +3,8 @@ import asyncio
 import logging
 from functools import wraps
 
+import httpx
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,3 +27,10 @@ def with_retry(max_attempts=10, delay=2):
         return wrapper
 
     return decorator
+
+
+@with_retry()
+async def get_response_json(url: str, headers: dict[str, str]) -> dict:
+    async with httpx.AsyncClient(headers=headers) as client:
+        response = await client.get(url)
+        return response.json()
