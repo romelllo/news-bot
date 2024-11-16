@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 from functools import wraps
@@ -8,7 +7,7 @@ import httpx
 logger = logging.getLogger(__name__)
 
 
-def with_retry(max_attempts=10, delay=2):
+def with_retry(max_attempts=3, delay=2):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):

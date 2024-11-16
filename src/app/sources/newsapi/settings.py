@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     NEWSAPI_KEY: str
     NEWSAPI_BASE_URL: str = "https://newsapi.org/v2"
     NEWSAPI_TOP_HEADLINES_ENDPOINT: str = "top-headlines"
+    NEWSAPI_EVERYTHING_ENDPOINT: str = "everything"
     NEWSAPI_SOURCES_ENDPOINT: str = "sources"
     NEWSAPI_DEFAULT_LANGUAGE: str = "en"
     NEWSAPI_DEFAULT_COUNTRY: str = "us"
@@ -23,44 +24,63 @@ class Settings(BaseSettings):
         SCIENCE = "science"
         TECHNOLOGY = "technology"
 
-    class NewsApiSourcesToTrack(str, Enum):
+    class NewsApiSourcesToTrackTopHeadlinesEndpoint(str, Enum):
         REUTERS = "reuters"
         MEDICAL_NEWS_TODAY = "medical-news-today"
-        NEW_SCIENTIST = "new-scientist"
-        ARS_TECHNICA = "ars-technica"
         CRYPTO_COIN_NEWS = "crypto-coins-news"
-        ENGADGET = "engadget"
-        HACKER_NEWS = "hacker-news"
-        TECHCRUNCH = "techcrunch"
         THE_VERGE = "the-verge"
         WIRED = "wired"
 
+    class NewsApiSourcesToTrackEverythingEndpoint(str, Enum):
+        HACKER_NEWS = "hacker-news"
+        TECHCRUNCH = "techcrunch"
+
+    class NewsApiSourcesToTrackIds(str, Enum):
+        REUTERS = "reuters"
+        MEDICAL_NEWS_TODAY = "medical-news-today"
+        CRYPTO_COIN_NEWS = "crypto-coins-news"
+        THE_VERGE = "the-verge"
+        WIRED = "wired"
+        HACKER_NEWS = "hacker-news"
+        TECHCRUNCH = "techcrunch"
+
+    class NewsApiSourcesToTrackNames(str, Enum):
+        REUTERS = "Reuters"
+        MEDICAL_NEWS_TODAY = "Medical News Today"
+        CRYPTO_COIN_NEWS = "Crypto Coins News"
+        THE_VERGE = "The Verge"
+        WIRED = "Wired"
+        HACKER_NEWS = "Hacker News"
+        TECHCRUNCH = "TechCrunch"
+
     def newsapi_categories_to_track_values_list(self):
         return list(category.value for category in self.NewsApiCategoriesToTrack)
-    
-    def newsapi_sources_to_track_values_list(self):
-        return list(source.value for source in self.NewsApiSourcesToTrack)
+
+    def newsapi_sources_to_track_top_headlines_values_list(self):
+        return list(
+            source.value for source in self.NewsApiSourcesToTrackTopHeadlinesEndpoint
+        )
+
+    def newsapi_sources_to_track_everything_values_list(self):
+        return list(
+            source.value for source in self.NewsApiSourcesToTrackEverythingEndpoint
+        )
 
     def newsapi_top_headlines_url(self):
-        return urljoin(self.NEWSAPI_BASE_URL + '/', self.NEWSAPI_TOP_HEADLINES_ENDPOINT)
-    
-    def news_api_top_headlines_url_sources(self, sources: str):
-        return f"{self.newsapi_top_headlines_url()}?sources={sources}"
+        return urljoin(self.NEWSAPI_BASE_URL + "/", self.NEWSAPI_TOP_HEADLINES_ENDPOINT)
 
-    def newsapi_sources_url(self):
-        return urljoin(self.newsapi_top_headlines_url() + '/', self.NEWSAPI_SOURCES_ENDPOINT)
-    
-    def newsapi_sources_url_lang(self):
-        return f"{self.newsapi_sources_url()}?language={self.NEWSAPI_DEFAULT_LANGUAGE}"
-    
-    def newsapi_sources_url_lang_country(self):
-        return f"{self.newsapi_sources_url_lang()}&country={self.NEWSAPI_DEFAULT_COUNTRY}"
-    
-    def newsapi_sources_url_lang_category(self, category: str):
-        return f"{self.newsapi_sources_url_lang()}&category={category}"
-    
-    def newsapi_sources_url_lang_country_category(self, category: str):
-        return f"{self.newsapi_sources_url_lang_country()}&category={category}"
-    
+    def newsapi_everything_url(self):
+        return urljoin(self.NEWSAPI_BASE_URL + "/", self.NEWSAPI_EVERYTHING_ENDPOINT)
+
+    def newsapi_top_headlines_url_sources(self, sources: str):
+        return (
+            f"{self.newsapi_top_headlines_url()}?sources={sources}&pageSize=100&page=1"
+        )
+
+    def newsapi_everything_url_sources(
+        self, sources: str, from_date: str, to_date: str
+    ):
+        return f"{self.newsapi_everything_url()}?sources={sources}&from={from_date}&to={to_date}&sortBy=puplishedAt&pageSize=100&page=1"
+
 
 settings = Settings()
